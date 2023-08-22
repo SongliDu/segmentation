@@ -13,14 +13,14 @@ from utils.utils import (
 )
 
 ct_dir = "/home/dusongli/project/segmentation/data/2D_CT/"
-# lung_mask_dir = "/home/dusongli/project/segmentation/data/2D_Mask"
+lung_mask_dir = "/home/dusongli/project/segmentation/data/2D_Mask"
 
 val_dir = "/home/dusongli/project/segmentation/data/2D_Val/"
-val_lung_and_infection_mask_dir = "/home/dusongli/project/segmentation/data/2D_Val_Lung_and_Infection_Mask"
+val_lung_mask_dir = "/home/dusongli/project/segmentation/data/2D_Val_Mask"
 
 device = 'cuda'
 batch_size = 8
-epochs = 2
+epochs = 10
 lr = 1e-4
 image_size = 512
 load_model = False
@@ -29,8 +29,8 @@ def train(loader, model, optimizer, loss_fn, scaler):
     loop = tqdm(loader)
     for batch_idx, (data, targets) in enumerate(loop):
         data = data.to(device=device)
-
-        targets = targets.long().to(device=device)
+        data = data.float()
+        targets = targets.float().unsqueeze(1).to(device=device)
         # forward
         with torch.cuda.amp.autocast():
             predictions = model(data)
@@ -44,10 +44,6 @@ def train(loader, model, optimizer, loss_fn, scaler):
 
         # update tqdm loop
         loop.set_postfix(loss=loss.item())
-
-        # if (batch_idx == 5):
-        #     break
-
 
 def main():
     train_transform = A.Compose(
@@ -64,21 +60,20 @@ def main():
             ToTensorV2(),
         ]
     )
-    model = Unet(in_channels=1, out_channels=4).to(device)
+    model = Unet(in_channels=1, out_channels=1).to(device)
     
-    loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.BCEWithLogitsLoss()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     scaler = torch.cuda.amp.GradScaler()
 
     train_loader, val_loader = get_loaders(
-        ct_dir, lung_and_infection_mask_dir, val_dir, val_lung_and_infection_mask_dir, batch_size, train_transform, val_transform, num_workers=4
+        ct_dir, lung_mask_dir, val_dir, val_lung_mask_dir, batch_size, train_transform, val_transform, num_workers=4
     )
 
     if (load_model):
-        load_checkpoint(torch.load("my_checkpoint.pth.tar"), model)
-    
+        load_checkpoint(torch.load("lung.pth.tar"), model)
 
     for epoch in range(epochs):
         train(train_loader, model, optimizer, loss_fn, scaler)
@@ -86,7 +81,7 @@ def main():
             "state_dict": model.state_dict(),
             "optimizer": optimizer.state_dict(),
         }
-        save_checkpoint(checkpoint, filename="lung_and_infection.pth.tar")
+        save_checkpoint(checkpoint, filename="lung.pth.tar")
         check_accuracy(val_loader, model, device=device)
         save_predictions_as_imgs(val_loader, model, folder="saved_img/", device=device)
 

@@ -1,4 +1,5 @@
 /__pycache__
 /data
 my_checkpoint.pth.tar
+lung.pth.tar
 /saved_img

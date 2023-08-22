@@ -21,7 +21,7 @@ def main():
 
     output_folder = 'saved_img/'
 
-    checkpoint = torch.load('my_checkpoint.pth.tar')
+    checkpoint = torch.load('lung.pth.tar')
     model = Unet(in_channels=1, out_channels=1)
     model.load_state_dict(checkpoint['state_dict'])
     model.to(device='cuda')

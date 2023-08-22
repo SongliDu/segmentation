@@ -1,6 +1,6 @@
 import torch
 import torchvision
-from dataset import CTdataset
+from dataset import CTDataset
 from torch.utils.data import DataLoader
 
 def save_checkpoint(state, filename="my_checkpoint.pth.tar"):
@@ -14,13 +14,13 @@ def load_checkpoint(checkpoint, model):
 def get_loaders(train_dir, train_maskdir, val_dir, val_mask_dir, batch_size, train_transform, val_transform, num_workers=4, pin_memory=True):
     
     print(train_maskdir)
-    train_ds = CTdataset(
-        ct_dir=train_dir,
+    train_ds = CTDataset(
+        image_dir=train_dir,
         mask_dir=train_maskdir,
         transform=train_transform,
     )
-    val_ds = CTdataset(
-        ct_dir=val_dir,
+    val_ds = CTDataset(
+        image_dir=val_dir,
         mask_dir=val_mask_dir,
         transform=val_transform,
     )
@@ -47,7 +47,7 @@ def get_loaders(train_dir, train_maskdir, val_dir, val_mask_dir, batch_size, tra
     )
     return train_loader, val_loader
 
-def check_accuracy(loader, model, device="cuda"):
+def check_accuracy_multiclass(loader, model, device="cuda"):
     num_correct = 0
     num_pixels = 0
     dice_score = 0
@@ -71,27 +71,25 @@ def check_accuracy(loader, model, device="cuda"):
     model.train()
 
 
-# def check_accuracy(loader, model, device="cuda"):
-#     num_correct = 0
-#     num_pixels = 0
-#     dice_score = 0
-#     model.eval()
-#     with torch.no_grad():
-#         for x, y in loader:
-#             x = x.to(device)
-#             y = y.float()
-#             preds = torch.sigmoid(model(x))
-#             preds = (preds > 0.5)
-#             print(preds.shape)
-#             print(y.shape)
-#             num_correct += (preds == y).sum()
-#             num_pixels += torch.numel(preds)
-#             dice_score += (2 * (preds * y).sum()) / (
-#                 (preds + y).sum() + 1e-8
-#             )
-#     print(f"Got {num_correct}/{num_pixels} with acc {num_correct/num_pixels*100:.2f}")
-#     print(f"Dice score: {dice_score/len(loader)}")
-#     model.train()
+def check_accuracy(loader, model, device="cuda"):
+    num_correct = 0
+    num_pixels = 0
+    dice_score = 0
+    model.eval()
+    with torch.no_grad():
+        for x, y in loader:
+            x = x.to(device)
+            y = y.to(device).float()
+            preds = torch.sigmoid(model(x))
+            preds = (preds > 0.5).float()
+            num_correct += (preds == y).sum()
+            num_pixels += torch.numel(preds)
+            dice_score += (2 * (preds * y).sum()) / (
+                (preds + y).sum() + 1e-8
+            )
+    print(f"Got {num_correct}/{num_pixels} with acc {num_correct/num_pixels*100:.2f}")
+    print(f"Dice score: {dice_score/len(loader)}")
+    model.train()
 
 
 def save_predictions_as_imgs(loader, model, folder="saved_img/", device="cuda"):
@@ -104,7 +102,7 @@ def save_predictions_as_imgs(loader, model, folder="saved_img/", device="cuda"):
         x = x.to(device=device)
         with torch.no_grad():
             preds = model(x)
-            # preds = (preds > 0.5).float()
+            preds = (preds > 0.5).float()
         torchvision.utils.save_image(
             preds, f"{folder}/pred_{idx}.png"
         )
