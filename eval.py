@@ -6,7 +6,7 @@ import torch
 import torchvision
 from model.unet import Unet
 
-dicom_dir = 'data/10000_1'
+dicom_dir = 'data/2D_Test'
 image_size = 512
 output_dir = 'data/test'
 
