@@ -50,6 +50,4 @@ for idx, x in enumerate(test_loader):
     torchvision.utils.save_image(
         preds, f"{output_dir}/pred_{idx}.png"
     )
-    # if (idx == 10):
-    #     break
 model.train()
