@@ -24,7 +24,9 @@ for ct_file in tqdm(ct_files):
     for i in range(mask_data.shape[2]):
         
         mask_slice = mask_data[:, :, i]
+        mask_slice = mask_slice
         # mask_slice = (mask_slice) / 3 * 255
+
         mask_slice = mask_slice.astype(np.uint8)
 
         mask_slice_name = f"{os.path.splitext(ct_file)[0]}_slice_{i}.png"        

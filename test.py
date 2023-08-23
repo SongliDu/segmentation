@@ -5,19 +5,35 @@ import torchvision
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
-
+import pydicom
 def main():
-    image_path = '/home/dusongli/project/segmentation/data/2D_CT/coronacases_009.nii_slice_100.png'  
+    image_path = '/home/dusongli/project/segmentation/data/2D_Val/coronacases_001.nii_slice_100.png'  
     # mask_path = '/home/dusongli/project/segmentation/data/2D_Lung_and_Infection_Mask/coronacases_001.nii_slice_100.png'  
-    mask_path = '/home/dusongli/project/segmentation/data/2D_Mask/coronacases_009.nii_slice_100.png'
-    
+    mask_path = '/home/dusongli/project/segmentation/data/2D_Val_Mask/coronacases_001.nii_slice_100.png'
+    image2_path = '/home/dusongli/project/segmentation/data/test/image_2.png'
+    dicom_file = 'data/10000_1/M55264A0'
+
     image = np.array(Image.open(image_path))
     mask = np.array(Image.open(mask_path), dtype=np.float32)
+    # image2 = np.array(Image.open(image2_path))
+    # ds = pydicom.dcmread(dicom_file)
+    # image3 = ds.pixel_array
+    # min = 1000000000
+    # for i in range (512):
+    #     for j in range (512):
+    #         if (image3[i][j] != -2000):
+    #             if (min >= image3[i][j]):
+    #                 min = image3[i][j]
+    # print(min)  
+    # plt.imshow(image3, cmap=plt.cm.gray)
+    # plt.axis('off')  # Turn off axis
+    # plt.show()
     # plt.subplot(1,2,1)
     # plt.imshow(image, cmap='gray')
     # plt.subplot(1,2,2)
-    # plt.imshow(mask, cmap='gray')
+    # plt.imshow(image2, cmap='gray')
     # plt.show()
+
 
     output_folder = 'saved_img/'
 

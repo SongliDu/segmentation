@@ -5,9 +5,8 @@ from torch.utils.data import Dataset
 import pydicom
 
 class dicomDataset(Dataset):
-    def __init__(self, image_dir, mask_dir, transform=None):
+    def __init__(self, image_dir, transform=None):
         self.image_dir = image_dir
-        # self.mask_dir = mask_dir
         self.transform = transform
         self.images = os.listdir(image_dir)
 
@@ -16,15 +15,16 @@ class dicomDataset(Dataset):
 
     def __getitem__(self, index):
         img_path = os.path.join(self.image_dir, self.images[index])
-        mask_path = os.path.join(self.mask_dir, self.images[index])
-        image = np.array(Image.open(img_path).convert('L'))
-        mask = np.array(Image.open(mask_path), dtype=np.float32)
-        mask[mask>2] = 1.0
+        ds = pydicom.dcmread(img_path)
+        image = ds.pixel_array
+        image[image == -2000] = 25
+        min = np.min(image)
+        max = np.max(image)
+        image = (image - min) / (max - min) * 255
         if self.transform is not None:
-            augmentations = self.transform(image=image, mask=mask)
+            augmentations = self.transform(image=image)
             image = augmentations['image']
-            mask = augmentations['mask']
-        return image, mask
+        return image
     
 # import pydicom
 # import os
