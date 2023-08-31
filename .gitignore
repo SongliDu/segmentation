@@ -4,3 +4,4 @@ my_checkpoint.pth.tar
 lung.pth.tar
 /saved_img
 /checkpoint
+utils/__pycache__/utils.cpython-38.pyc

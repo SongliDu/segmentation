@@ -13,7 +13,6 @@ from utils.utils import (
 )
 
 ct_dir = "/home/dusongli/project/segmentation/data/2D_CT/"
-# lung_mask_dir = "/home/dusongli/project/segmentation/data/2D_Mask"
 lung_and_infection_mask_dir = "/home/dusongli/project/segmentation/data/2D_Lung_and_Infection_Mask"
 
 val_dir = "/home/dusongli/project/segmentation/data/2D_Val/"
@@ -21,7 +20,7 @@ val_lung_and_infection_mask_dir = "/home/dusongli/project/segmentation/data/2D_V
 
 device = 'cuda'
 batch_size = 8
-epochs = 2
+epochs = 5
 lr = 1e-4
 image_size = 512
 load_model = False
@@ -46,8 +45,6 @@ def train(loader, model, optimizer, loss_fn, scaler):
         # update tqdm loop
         loop.set_postfix(loss=loss.item())
 
-        # if (batch_idx == 5):
-        #     break
 
 
 def main():
@@ -88,8 +85,8 @@ def main():
             "optimizer": optimizer.state_dict(),
         }
         save_checkpoint(checkpoint, filename="lung_and_infection.pth.tar")
-        check_accuracy(val_loader, model, device=device)
-        save_predictions_as_imgs(val_loader, model, folder="saved_img/", device=device)
+        # check_accuracy(val_loader, model, device=device)
+        # save_predictions_as_imgs(val_loader, model, folder="saved_img/", device=device)
 
 
 if __name__ == '__main__':

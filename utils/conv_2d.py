@@ -53,17 +53,11 @@ ct_files = os.listdir(ct_dir)
 
 for ct_file in tqdm(ct_files):
     ct_path = os.path.join(ct_dir, ct_file)
-    ct_path = os.path.join(ct_dir, ct_file)
 
     ct_data = nib.load(ct_path).get_fdata()
-    ct_data = nib.load(ct_path).get_fdata()
 
-    for i in range(ct_data.shape[2]):
     for i in range(ct_data.shape[2]):
         
-        slice = ct_data[:, :, i]
-        slice[slice < -1200] = -1200
-        slice[slice > 600] = 600
         slice = ct_data[:, :, i]
         slice[slice < -1200] = -1200
         slice[slice > 600] = 600
@@ -71,16 +65,8 @@ for ct_file in tqdm(ct_files):
         min = np.min(slice)
         max = np.max(slice)
         slice = (slice - min) / (max - min) * 255
-        min = np.min(slice)
-        max = np.max(slice)
-        slice = (slice - min) / (max - min) * 255
 
         slice = slice.astype(np.uint8)
-        slice = slice.astype(np.uint8)
-
-        slice_name = f"{os.path.splitext(ct_file)[0]}_slice_{i}.png"
-        slice_path = os.path.join(ct_2d_dir, slice_name)
-        io.imsave(slice_path, slice)
         slice_name = f"{os.path.splitext(ct_file)[0]}_slice_{i}.png"
         slice_path = os.path.join(ct_2d_dir, slice_name)
         io.imsave(slice_path, slice)

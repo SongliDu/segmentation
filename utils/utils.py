@@ -4,16 +4,16 @@ from dataset import CTDataset
 from torch.utils.data import DataLoader
 
 def save_checkpoint(state, filename="my_checkpoint.pth.tar"):
-    print("=> Saving checkpoint")
+    # print("=> Saving checkpoint")
     torch.save(state, filename)
 
 def load_checkpoint(checkpoint, model):
-    print("=> Loading checkpoint")
+    # print("=> Loading checkpoint")
     model.load_state_dict(checkpoint["state_dict"])
 
 def get_loaders(train_dir, train_maskdir, val_dir, val_mask_dir, batch_size, train_transform, val_transform, num_workers=4, pin_memory=True):
     
-    print(train_maskdir)
+    # print(train_maskdir)
     train_ds = CTDataset(
         image_dir=train_dir,
         mask_dir=train_maskdir,
@@ -26,9 +26,9 @@ def get_loaders(train_dir, train_maskdir, val_dir, val_mask_dir, batch_size, tra
     )
 
     train_samples = train_ds.__len__()
-    print("Train samples: ", train_samples)
+    # print("Train samples: ", train_samples)
     val_samples = val_ds.__len__()
-    print("Val samples: ", val_samples)
+    # print("Val samples: ", val_samples)
 
     train_loader = DataLoader(
         train_ds,
@@ -55,7 +55,7 @@ def check_accuracy_multiclass(loader, model, device="cuda"):
     with torch.no_grad():
         for x, y in loader:
             x = x.to(device)
-            y = y.to(device)
+            y = y.unsqueeze(0).to(device)
             preds = model(x)
             _, tags = torch.max(preds, dim=1)
             num_correct += (tags == y).float().sum()
@@ -79,7 +79,7 @@ def check_accuracy(loader, model, device="cuda"):
     with torch.no_grad():
         for x, y in loader:
             x = x.to(device)
-            y = y.to(device).float()
+            y = y.float().unsqueeze(1).to(device=device)
             preds = torch.sigmoid(model(x))
             preds = (preds > 0.5).float()
             num_correct += (preds == y).sum()
