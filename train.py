@@ -12,18 +12,18 @@ from utils.utils import (
     save_predictions_as_imgs,
 )
 
-ct_dir = "/home/dusongli/project/segmentation/data/2D_CT/"
-lung_mask_dir = "/home/dusongli/project/segmentation/data/2D_Mask"
+ct_dir = "data/2D_CT/"
+lung_mask_dir = "data/2D_Mask"
 
-val_dir = "/home/dusongli/project/segmentation/data/2D_Val/"
-val_lung_mask_dir = "/home/dusongli/project/segmentation/data/2D_Val_Mask"
+val_dir = "data/2D_Val/"
+val_lung_mask_dir = "data/2D_Val_Mask"
 
 device = 'cuda'
 batch_size = 8
 epochs = 10
 lr = 1e-4
 image_size = 512
-load_model = False
+load_model = True
 
 def train(loader, model, optimizer, loss_fn, scaler):
     loop = tqdm(loader)
@@ -44,6 +44,7 @@ def train(loader, model, optimizer, loss_fn, scaler):
 
         # update tqdm loop
         loop.set_postfix(loss=loss.item())
+
 
 def main():
     train_transform = A.Compose(
@@ -73,17 +74,18 @@ def main():
     )
 
     if (load_model):
-        load_checkpoint(torch.load("lung.pth.tar"), model)
+        load_checkpoint(torch.load("lung_epoch_90.pth.tar"), model)
 
     for epoch in range(epochs):
         train(train_loader, model, optimizer, loss_fn, scaler)
-        checkpoint = {
-            "state_dict": model.state_dict(),
-            "optimizer": optimizer.state_dict(),
-        }
-        save_checkpoint(checkpoint, filename="lung.pth.tar")
-        check_accuracy(val_loader, model, device=device)
-        save_predictions_as_imgs(val_loader, model, folder="saved_img/", device=device)
+        if (epoch + 1) % 5 == 0:  # Save checkpoint every 5 epochs
+            checkpoint = {
+                "state_dict": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+            }
+            save_checkpoint(checkpoint, filename=f"lung_epoch_{epoch + 1 + 90}.pth.tar")
+            check_accuracy(val_loader, model, device=device)
+            save_predictions_as_imgs(val_loader, model, folder="saved_img/", device=device)
 
 
 if __name__ == '__main__':

@@ -18,7 +18,8 @@ class CTDataset(Dataset):
         mask_path = os.path.join(self.mask_dir, self.images[index])
         image = np.array(Image.open(img_path).convert('L'))
         mask = np.array(Image.open(mask_path), dtype=np.float32)
-        mask[mask>2] = 1.0
+
+        mask[mask>0] = 1.0
         if self.transform is not None:
             augmentations = self.transform(image=image, mask=mask)
             image = augmentations['image']
