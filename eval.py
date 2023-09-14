@@ -6,12 +6,12 @@ import SimpleITK as sitk
 import matplotlib.pyplot as plt
 import nibabel as nib
 
-input_file = "data/test/10001_1.nii.gz"
-output_file = "data/test/10001_1_mask100.nii.gz"
+input_file = "data/test/10000_1.nii.gz"
+output_file = "data/test/10000_1_mask180.nii.gz"
 
 
 ## model
-checkpoint = torch.load('lung_epoch_100.pth.tar')
+checkpoint = torch.load('checkpoint/lung_epoch_180.pth.tar')
 model = Unet(in_channels=1, out_channels=1)
 model.load_state_dict(checkpoint['state_dict'])
 model.to(device='cuda')

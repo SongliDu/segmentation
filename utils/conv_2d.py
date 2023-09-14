@@ -3,70 +3,54 @@ import numpy as np
 import nibabel as nib
 from skimage import io
 from tqdm import tqdm
-
-ct_dir = '/home/dusongli/project/segmentation/data/COVID-19-CT-Seg_20cases/'
-# lung_mask_dir = '/home/dusongli/project/segmentation/data/Lung_Mask/'
-# infection_mask_dir = '/home/dusongli/project/segmentation/data/Infection_Mask/'
-# lung_and_infection_mask_dir = '/home/dusongli/project/segmentation/data/Lung_and_Infection_Mask/'
-# lung_mask_dir = '/home/dusongli/project/segmentation/data/Lung_Mask/'
-# infection_mask_dir = '/home/dusongli/project/segmentation/data/Infection_Mask/'
-# lung_and_infection_mask_dir = '/home/dusongli/project/segmentation/data/Lung_and_Infection_Mask/'
-
+import matplotlib.pyplot as plt
+ct_dir = '/home/dusongli/project/segmentation/data/3Dircadb/patient/'
+left_lung_dir = '/home/dusongli/project/segmentation/data/3Dircadb/leftlung/'
+right_lung_dir = '/home/dusongli/project/segmentation/data/3Dircadb/rightlung/'
 
 ct_2d_dir = '/home/dusongli/project/segmentation/data/2D_CT/'
-# lung_mask_2d_dir = '/home/dusongli/project/segmentation/data/2D_Mask/'
-# lung_and_infection_mask_2d_dir = '/home/dusongli/project/segmentation/data/2D_Lung_and_Infection_Mask/'
-
-
-
-
-# test_file = 'data/10000_1.nii.gz'
-# test_out_dir ='data/2D_Test'
-# test_data = nib.load(test_file).get_fdata()
-
-# for i in range(test_data.shape[2]):
-    
-#     image = test_data[:, :, i]
-#     image[image < -1200] = -1200
-#     image[image > 600] = 600
-#     min = np.min(image)
-#     max = np.max(image)
-#     image = (image - min) / (max - min) * 255
-
-#     image = image.astype(np.uint8)
-
-#     image_name = f"slice_{i}.png"        
-#     image_path = os.path.join(test_out_dir, image_name)
-#     io.imsave(image_path, image)
-
-
-
-
-
-
-
-
-
-
+mask_2d_dir = '/home/dusongli/project/segmentation/data/2D_Mask/'
 
 ct_files = os.listdir(ct_dir)
 
 for ct_file in tqdm(ct_files):
     ct_path = os.path.join(ct_dir, ct_file)
-
     ct_data = nib.load(ct_path).get_fdata()
+
+    left_lung_path = os.path.join(left_lung_dir, ct_file)
+    left_lung_data = nib.load(left_lung_path).get_fdata()
+
+    right_lung_path = os.path.join(right_lung_dir, ct_file)
+    right_lung_data = nib.load(right_lung_path).get_fdata()
 
     for i in range(ct_data.shape[2]):
         
         slice = ct_data[:, :, i]
         slice[slice < -1200] = -1200
         slice[slice > 600] = 600
-        # mask_slice = (mask_slice) / 3 * 255
         min = np.min(slice)
         max = np.max(slice)
         slice = (slice - min) / (max - min) * 255
-
         slice = slice.astype(np.uint8)
+        lung_slice = slice.copy()
         slice_name = f"{os.path.splitext(ct_file)[0]}_slice_{i}.png"
         slice_path = os.path.join(ct_2d_dir, slice_name)
         io.imsave(slice_path, slice)
+
+
+        left_slice = left_lung_data[:, :, i]
+        right_slice = right_lung_data[:, :, i]
+        mask_slice = left_slice + right_slice
+        mask_slice = mask_slice.astype(np.uint8)
+
+        # plt.subplot(1, 2, 1)
+        # plt.imshow(lung_slice, cmap='gray')
+        # plt.title('Original Image')
+        # plt.subplot(1, 2, 2)
+        # plt.imshow(mask_slice, cmap='gray')
+        # plt.title('Predicted Mask')
+        # plt.show()
+
+        slice_name = f"{os.path.splitext(ct_file)[0]}_slice_{i}.png"
+        slice_path = os.path.join(mask_2d_dir, slice_name)
+        io.imsave(slice_path, mask_slice)

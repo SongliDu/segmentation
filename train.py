@@ -20,7 +20,7 @@ val_lung_mask_dir = "data/2D_Val_Mask"
 
 device = 'cuda'
 batch_size = 8
-epochs = 10
+epochs = 80
 lr = 1e-4
 image_size = 512
 load_model = True
@@ -74,18 +74,18 @@ def main():
     )
 
     if (load_model):
-        load_checkpoint(torch.load("lung_epoch_90.pth.tar"), model)
+        load_checkpoint(torch.load("/home/dusongli/project/segmentation/lung_epoch_170.pth.tar"), model)
 
     for epoch in range(epochs):
         train(train_loader, model, optimizer, loss_fn, scaler)
-        if (epoch + 1) % 5 == 0:  # Save checkpoint every 5 epochs
+        if (epoch + 1) % 10 == 0:
             checkpoint = {
                 "state_dict": model.state_dict(),
                 "optimizer": optimizer.state_dict(),
             }
-            save_checkpoint(checkpoint, filename=f"lung_epoch_{epoch + 1 + 90}.pth.tar")
+            save_checkpoint(checkpoint, filename=f"lung_epoch_{epoch + 1 + 170}.pth.tar")
             check_accuracy(val_loader, model, device=device)
-            save_predictions_as_imgs(val_loader, model, folder="saved_img/", device=device)
+            # save_predictions_as_imgs(val_loader, model, folder="saved_img/", device=device)
 
 
 if __name__ == '__main__':

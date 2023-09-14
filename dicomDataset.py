@@ -7,7 +7,6 @@ from torch.utils.data import Dataset
 
 class dicomDataset(Dataset):
     def __init__(self, image_dir, transform=None):
-    def __init__(self, image_dir, transform=None):
         self.image_dir = image_dir
         self.transform = transform
         self.images = os.listdir(image_dir)
