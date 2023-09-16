@@ -3,8 +3,6 @@ import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset
 
-
-
 class dicomDataset(Dataset):
     def __init__(self, image_dir, transform=None):
         self.image_dir = image_dir
@@ -22,5 +20,4 @@ class dicomDataset(Dataset):
             augmentations = self.transform(image=image)
             augmentations = self.transform(image=image)
             image = augmentations['image']
-        return image
         return image
