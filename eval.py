@@ -6,12 +6,12 @@ import SimpleITK as sitk
 import matplotlib.pyplot as plt
 import nibabel as nib
 
-input_file = "data/test/10000_1.nii.gz"
-output_file = "data/test/10000_1_mask180.nii.gz"
+input_file = "data/test/10002_1.nii.gz"
+output_file = "data/test/10002_1_mask120.nii.gz"
 
 
 ## model
-checkpoint = torch.load('checkpoint/lung_epoch_180.pth.tar')
+checkpoint = torch.load('lung_epoch_120.pth.tar')
 model = Unet(in_channels=1, out_channels=1)
 model.load_state_dict(checkpoint['state_dict'])
 model.to(device='cuda')
@@ -44,14 +44,6 @@ for i in range(ct_data.shape[2]):
         # print(pred.shape)
         preds.append(pred)
     
-    # plt.subplot(1, 2, 1)
-    # plt.imshow(image, cmap='gray')
-    # plt.title('Original Image')
-    # plt.subplot(1, 2, 2)
-    # plt.imshow(pred, cmap='gray')
-    # plt.title('Predicted Mask')
-    # plt.show()
-
 preds = np.array(preds, dtype='float32')
 print(preds.shape)
 sitk.WriteImage(sitk.GetImageFromArray(preds), output_file)

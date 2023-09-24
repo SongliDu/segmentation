@@ -32,7 +32,6 @@ for ct_file in tqdm(ct_files):
         max = np.max(slice)
         slice = (slice - min) / (max - min) * 255
         slice = slice.astype(np.uint8)
-        lung_slice = slice.copy()
         slice_name = f"{os.path.splitext(ct_file)[0]}_slice_{i}.png"
         slice_path = os.path.join(ct_2d_dir, slice_name)
         io.imsave(slice_path, slice)
@@ -41,15 +40,8 @@ for ct_file in tqdm(ct_files):
         left_slice = left_lung_data[:, :, i]
         right_slice = right_lung_data[:, :, i]
         mask_slice = left_slice + right_slice
+        mask_slice[mask_slice > 0] = 255
         mask_slice = mask_slice.astype(np.uint8)
-
-        # plt.subplot(1, 2, 1)
-        # plt.imshow(lung_slice, cmap='gray')
-        # plt.title('Original Image')
-        # plt.subplot(1, 2, 2)
-        # plt.imshow(mask_slice, cmap='gray')
-        # plt.title('Predicted Mask')
-        # plt.show()
 
         slice_name = f"{os.path.splitext(ct_file)[0]}_slice_{i}.png"
         slice_path = os.path.join(mask_2d_dir, slice_name)
