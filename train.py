@@ -81,7 +81,7 @@ def main():
     )
 
     if (load_model):
-        load_checkpoint(torch.load("/home/dusongli/project/segmentation/lung_epoch_280.pth.tar"), model)
+        load_checkpoint(torch.load("/home/dusongli/project/segmentation/lung_epoch_390.pth.tar"), model)
 
     for epoch in range(epochs):
         train(train_loader, model, optimizer, loss_fn, scaler)
@@ -90,7 +90,7 @@ def main():
                 "state_dict": model.state_dict(),
                 "optimizer": optimizer.state_dict(),
             }
-            save_checkpoint(checkpoint, filename=f"lung_epoch_{epoch + 1 + 280}.pth.tar")
+            save_checkpoint(checkpoint, filename=f"lung_epoch_{epoch + 1 + 390}.pth.tar")
             check_accuracy(val_loader, model, device=device)
 
 
