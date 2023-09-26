@@ -1,6 +1,7 @@
 import torch
 import torchvision
 from dataset import CTDataset
+from nifti_dataset import nifti_Dataset
 from torch.utils.data import DataLoader
 
 def save_checkpoint(state, filename="my_checkpoint.pth.tar"):
@@ -14,12 +15,12 @@ def load_checkpoint(checkpoint, model):
 def get_loaders(train_dir, train_maskdir, val_dir, val_mask_dir, batch_size, train_transform, val_transform, num_workers=4, pin_memory=True):
     
     # print(train_maskdir)
-    train_ds = CTDataset(
+    train_ds = nifti_Dataset(
         image_dir=train_dir,
         mask_dir=train_maskdir,
         transform=train_transform,
     )
-    val_ds = CTDataset(
+    val_ds = nifti_Dataset(
         image_dir=val_dir,
         mask_dir=val_mask_dir,
         transform=val_transform,
