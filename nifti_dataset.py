@@ -2,6 +2,7 @@ import os
 import numpy as np
 from torch.utils.data import Dataset
 import nibabel as nib
+from matplotlib import pyplot as plt
 
 ## dataset for 3D nifti files
 class nifti_Dataset(Dataset):
@@ -33,6 +34,9 @@ class nifti_Dataset(Dataset):
                 self.masks.append(slice)
 
 
+
+
+
     def __len__(self):
         return len(self.images)
 
@@ -41,4 +45,6 @@ class nifti_Dataset(Dataset):
             augmentations = self.transform(image=self.images[index], mask=self.masks[index])
             image = augmentations['image']
             mask = augmentations['mask']
+
+
         return image, mask
